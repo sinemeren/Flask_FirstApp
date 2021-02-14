@@ -1,0 +1,31 @@
+
+#base dokcer image
+FROM ubuntu:latest
+# to run the flask app, python3 and pip3 need to be installed on docker image
+# apk is package manager for the alpine image, apt is package manager for ubuntu
+# --no-cahce means I dont want to install any cach into my image because it will increase the size
+RUN apt-get update -y && \
+    apt-get install -y python3-pip python-dev
+
+COPY ./requirements.txt /var/www/requirements.txt
+
+# creating app directory inside docker image which will be working directory where all the modules installed, run
+WORKDIR /var/www
+
+# install the requirements
+RUN pip3 install -r requirements.txt
+
+# copy the source code from the current directory to the particular working directory. . means where the dockerfile presents
+COPY . /var/www
+
+
+
+# export a port so that people from outside world can access
+EXPOSE 5000
+
+# make the container executable. If we create a container from docker image, it should not exit by itself, it should be in the runnning state
+# entrypoint makes the container executable
+CMD ["flask", "run", "--host", "0.0.0.0"]
+#CMD ["flask", "run"]
+#ENTRYPOINT ["python3"]
+#CMD ["app/views.py"]
